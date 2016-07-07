@@ -1,0 +1,49 @@
+- name: Install pip virtualenv
+  pip:
+    name: virtualenv
+  tags: amazon
+
+- name: Install ansible 2
+  pip:
+    name: "http://releases.ansible.com/ansible/ansible-2.0.0-0.7.rc2.tar.gz"
+    virtualenv: "{{ virtual_env_path }}/.ansible2_env"
+  tags: amazon
+
+- name: Install extra pip packages
+  pip:
+    name: {{ item }}
+    virtualenv: "{{ virtual_env_path }}/.ansible2_env"
+  with_items:
+    - boto
+    - six
+  tags: amazon
+
+- name: Create utils path
+  file:
+    path: "{{ utils_path }}"
+    owner: "{{ utils_user }}"
+    group: "{{ utils_group }}"
+    state: directory
+    mode: 0750
+    recurse: true
+  tags: amazon
+
+- name: Copy start & stop playbook into utils
+  template:
+    src: start_stop.yml.j2
+    dest: "{{ utils_path }}/start_stop.yml"
+    owner: "{{ utils_user }}"
+    group: "{{ utils_group }}"
+    mode: 0640
+  when: start_stop_list is defined
+  tags: amazon
+
+- name: Copy bucket lifecycle into utils
+  template:
+    src: backup_lifecycle.yml.j2
+    dest: "{{ utils_path }}/backup_lifecycle.yml"
+    owner: "{{ utils_user }}"
+    group: "{{ utils_group }}"
+    mode: 0640
+  when: lifecycle_policies is defined
+  tags: amazon

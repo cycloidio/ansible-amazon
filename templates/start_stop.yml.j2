@@ -1,0 +1,23 @@
+- hosts: localhost
+  become: yes
+  gather_facts: false
+  connection: local
+  vars:
+    {{ start_stop_list }}
+
+  {% raw %}
+  tasks:
+    - fail: msg="State should be defined running|stopped"
+      when: state != "stopped" and state != "running"
+
+    - name: Start/stop instance
+      local_action:
+        module: ec2
+        region: eu-west-1
+        instance_tags:
+            env: "{{ item.env }}"
+            role: "{{ item.role }}"
+            project: "{{ item.project }}"
+        state: "{{ state }}"
+      with_items: "{{ start_stop_list }}"
+  {% endraw %}
