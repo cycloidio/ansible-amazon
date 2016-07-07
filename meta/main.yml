@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  author: hugo.rosnet@cycloid.io
+  description:
+  company: cycloid.io
+  license: cycloid.io
+  min_ansible_version: 1.9
+dependencies:
+- { role: cchurch.virtualenv, become: yes, virtualenv_path: "{{ virtual_env_path }}", tags: amazon }

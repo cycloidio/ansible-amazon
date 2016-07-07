@@ -1,0 +1,33 @@
+- hosts: localhost
+  become: yes
+  gather_facts: false
+  connection: local
+  vars:
+    {{ lifecycle_policies }}
+
+  {% raw %}
+  tasks:
+    # Add lifecycle with glacier
+    - s3_lifecycle:
+        name: "{{ item.bucket }}"
+        rule_id: "{{ item.name }}"
+        transition_days: "{{ item.transition_days }}"
+        expiration_days: "{{ item.expiration_days }}"
+        prefix: "{{ item.prefix | default('') }}"
+        status: enabled
+        state: present
+      with_items: lifecycle_policies
+      when:
+        item.transition_days is defined and item.transition_days > 0
+    # Add lifecycle without glacier
+    - s3_lifecycle:
+        name: "{{ item.bucket }}"
+        rule_id: "{{ item.name }}"
+        expiration_days: "{{ item.expiration_days }}"
+        prefix: "{{ item.prefix | default('') }}"
+        status: enabled
+        state: present
+      with_items: lifecycle_policies
+      when:
+        item.transition_days is undefined or item.transition_days == 0
+  {% endraw %}
