@@ -18,6 +18,13 @@
     - six
   tags: amazon
 
+- name: Install setuptools at latest version
+  pip:
+    name: setuptools
+    version: 11.3
+    virtualenv: "{{ virtual_env_path }}"
+  tags: amazon
+
 - name: Create utils path
   file:
     path: "{{ utils_path }}"
