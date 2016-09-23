@@ -16,6 +16,7 @@
   with_items:
     - boto
     - six
+    - markupsafe
   tags: amazon
 
 - name: Install setuptools at latest version
