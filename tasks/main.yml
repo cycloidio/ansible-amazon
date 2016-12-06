@@ -1,18 +1,6 @@
-- name: Install pip virtualenv
-  pip:
-    name: virtualenv
-  tags: amazon
-
-- name: Install ansible 2
-  pip:
-    name: "http://releases.ansible.com/ansible/ansible-2.0.0-0.7.rc2.tar.gz"
-    virtualenv: "{{ virtual_env_path }}"
-  tags: amazon
-
 - name: Install extra pip packages
   pip:
     name: "{{ item }}"
-    virtualenv: "{{ virtual_env_path }}"
   with_items:
     - boto
     - six
@@ -23,7 +11,6 @@
   pip:
     name: setuptools
     version: 11.3
-    virtualenv: "{{ virtual_env_path }}"
   tags: amazon
 
 - name: Create utils path

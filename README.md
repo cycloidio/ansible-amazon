@@ -3,16 +3,8 @@ ansible-amazon
 
 Utils for Amazon, currently contains the script for stop/start &amp; bucket lifecycles.
 
-A virtual env for Ansible2 is installed because it is required while the playbooks are pushed via template if their required variables are specified.
-
 Role Variables
 --------------
-
-**virtual_env_path**
-
-   Path for the ansible virtual env installation
-
-   default: ``"/home/admin/"``
 
 **utils_path**
 

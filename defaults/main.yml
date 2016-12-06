@@ -1,5 +1,4 @@
 ---
-virtual_env_path: "/home/admin/.ansible2_env"
 utils_path: "/home/admin/aws-utils"
 utils_user: "admin"
 utils_group: "admin"
