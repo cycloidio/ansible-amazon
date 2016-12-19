@@ -32,3 +32,9 @@
     mode: 0640
   when: start_stop_list is defined
   tags: amazon
+
+- include: s3_lifecycle.yml
+  when: lifecycle_policies is defined
+  tags:
+    - amazon
+    - lifecycle_policies
