@@ -39,32 +39,6 @@ Role Variables
 
    default: ``undefined``
 
-**lifecycle_policies**
-
-   If defined, make the 'backup lifecycle' script pushed into utils directory
-   e.g.:
-```
-   lifecycle_policies:
-     - bucket: my_bucket1
-       name: my_unique_policy_name1
-       transition_days: 60
-       expiration_days: 365
-       prefix: my_bucket1/dir1/dir2/
-     - bucket: my_bucket2
-       name: my_unique_policy_name2
-       name: my_bucket2
-       transition_days: 7
-       expiration_days: 30
-       prefix: my_bucket2/dir1/dir2/
-     - bucket: warnerbros-backup
-       name: my_unique_policy_name3
-       transition_days: 180
-       expiration_days: 730
-       prefix: my_bucket2/dir1/dir3/
-```
-
-   default: ``undefined``
-
 License
 -------
 

@@ -32,13 +32,3 @@
     mode: 0640
   when: start_stop_list is defined
   tags: amazon
-
-- name: Copy bucket lifecycle into utils
-  template:
-    src: backup_lifecycle.yml.j2
-    dest: "{{ utils_path }}/backup_lifecycle.yml"
-    owner: "{{ utils_user }}"
-    group: "{{ utils_group }}"
-    mode: 0640
-  when: lifecycle_policies is defined
-  tags: amazon
