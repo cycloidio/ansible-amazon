@@ -3,7 +3,7 @@
   gather_facts: false
   connection: local
   vars:
-    start_stop_list: {{ start_stop_list }}
+    start_stop_list: {{ start_stop_list | to_json }}
 
   {% raw %}
   tasks:
