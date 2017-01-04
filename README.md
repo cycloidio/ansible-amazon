@@ -56,7 +56,7 @@ Role Variables
        transition_days: 7
        expiration_days: 30
        prefix: my_bucket2/dir1/dir2/
-     - bucket: warnerbros-backup
+     - bucket: backup
        name: my_unique_policy_name3
        transition_days: 180
        expiration_days: 730
