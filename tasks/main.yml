@@ -33,6 +33,18 @@
   when: start_stop_list is defined
   tags: amazon
 
+- name: Copy start & stop RDS playbook into utils
+  template:
+    src: start_stop_rds.yml.j2
+    dest: "{{ utils_path }}/start_stop_rds.yml"
+    owner: "{{ utils_user }}"
+    group: "{{ utils_group }}"
+    mode: 0640
+  when: start_stop_rds_list is defined
+  tags:
+    - amazon
+    - amazon-rds
+
 - include: s3_lifecycle.yml
   when: lifecycle_policies is defined
   tags:

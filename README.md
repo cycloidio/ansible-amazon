@@ -39,6 +39,30 @@ Role Variables
 
    default: ``undefined``
 
+ **start_stop_rds_list**
+
+    If defined, make the start-stop script to resize RDS instances pushed into utils directory
+    e.g.:
+ ```
+    start_stop_rds_list:
+      - instance_name: foo
+        region: eu-west-1
+        stopped:
+          instance_type: db.t2.micro
+        running:
+          instance_type: db.t2.small
+ ```
+
+    default (`instance_type` and `instance_name` are required):
+
+ ```
+     rds_defaults:
+       wait_timeout: 600
+       region: eu-west-1
+       stopped:
+         instance_type: db.t2.micro
+ ```
+
 **lifecycle_policies**
 
    If defined, make apply lifecycle policy on s3 bucket.
