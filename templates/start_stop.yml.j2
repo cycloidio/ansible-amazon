@@ -10,7 +10,7 @@
     - fail: msg="State should be defined running|stopped"
       when: state != "stopped" and state != "running"
 
-    - name: Start/stop instance
+    - name: Start/stop instance by group tags
       local_action:
         module: ec2
         region: eu-west-1
@@ -19,5 +19,16 @@
             role: "{{ item.role }}"
             project: "{{ item.project }}"
         state: "{{ state }}"
+      when: item.Name is undefined
+      with_items: "{{ start_stop_list }}"
+
+    - name: Start/stop instance by Name tag
+      local_action:
+        module: ec2
+        region: eu-west-1
+        instance_tags:
+            Name: "{{ item.Name }}"
+        state: "{{ state }}"
+      when: item.Name is defined
       with_items: "{{ start_stop_list }}"
   {% endraw %}
