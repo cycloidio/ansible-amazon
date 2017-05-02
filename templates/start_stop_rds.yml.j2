@@ -1,0 +1,62 @@
+- hosts: localhost
+  become: yes
+  gather_facts: false
+  connection: local
+  vars:
+    rds_defaults:
+      wait_timeout: 600
+      stopped:
+        instance_type: db.t2.micro
+      running:
+        instance_type: undefined
+      region: eu-west-1
+      # Warning this fields need to reflect every terraform modificaiton
+    start_stop_rds_list: {{ start_stop_rds_list | to_json }}
+
+{% raw %}
+  tasks:
+    - fail: msg="State should be defined running|stopped"
+      when: state != "stopped" and state != "running"
+
+    # In case of too much rds have a look to http://docs.ansible.com/ansible/playbooks_async.html
+    - name: "Modify RDS instance"
+      rds:
+        command: modify
+        instance_name: "{{ item.instance_name }}"
+        region: "{{ item.region | default(rds_defaults.region) }}"
+        apply_immediately: yes
+        # Disable wait because of *1
+        wait: no
+        # wait_timeout: "{{ item.wait_timeout | default(rds_defaults.wait_timeout) }}"
+        instance_type: "{{ item.get(state).instance_type | default(rds_defaults[state].instance_type) }}"
+      with_items: "{{ start_stop_rds_list }}"
+      tags: rds-modify
+
+    # *1 Wait a bit because of bug https://github.com/ansible/ansible/issues/19751
+    - name: "Wait 120 sec to be sure AWS take care of our requests"
+      local_action: wait_for path="." state=present delay=120
+
+    # Waiting the end of modifying state
+    - name: "Wait RDS instances state become available"
+      rds:
+        command: facts
+        instance_name: "{{ item.instance_name }}"
+        region: "{{ item.region | default(rds_defaults.region) }}"
+      register: rds_state
+      until: rds_state.instance.status != "modifying"
+      retries: "{{ (item.wait_timeout | default(rds_defaults.wait_timeout) / 10) | round | int }}"
+      delay: 10
+      with_items: "{{ start_stop_rds_list }}"
+      tags: rds-wait
+
+    # Check if now the rds instance type has the expected type
+    - name: "Check new RDS instance type"
+      rds:
+        command: facts
+        instance_name: "{{ item.instance_name }}"
+        region: "{{ item.region | default(rds_defaults.region) }}"
+      register: rds_type
+      failed_when: rds_type.instance.instance_type != "{{ item.get(state).instance_type | default(rds_defaults[state].instance_type) }}"
+      with_items: "{{ start_stop_rds_list }}"
+      tags: rds-check
+{% endraw %}
