@@ -1,0 +1,18 @@
+- hosts: localhost
+  become: yes
+  gather_facts: false
+  connection: local
+  vars: 
+    rds_start_stop_list: {{ rds_start_stop_list | to_json}}
+  
+  {% raw %}
+  tasks:
+    - fail: msg="Action should be defined as start|stop"
+      when: action != "start" and action != "stop"
+
+    - name: "Start/stop rds instance by Name"
+      command: >
+        /usr/local/bin/aws rds {{ action }}-db-instance --db-instance-identifier {{ item.Name }}
+      when: item.Name is defined
+      with_items: "{{ rds_start_stop_list }}"
+  {% endraw %}
