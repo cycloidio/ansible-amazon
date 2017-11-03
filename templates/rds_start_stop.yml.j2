@@ -2,17 +2,27 @@
   become: yes
   gather_facts: false
   connection: local
-  vars: 
+  vars:
     rds_start_stop_list: {{ rds_start_stop_list | to_json}}
-  
+
   {% raw %}
   tasks:
-    - fail: msg="Action should be defined as start|stop"
-      when: action != "start" and action != "stop"
+    - fail: msg="Operation should be defined as start|stop"
+      when: operation != "start" and operation != "stop"
+
+    - name: "Fetching rds instance state"
+      shell: >
+        /usr/local/bin/aws rds  describe-db-instances --db-instance-identifier {{ item.Name }} --region {{ item.region | default('eu-west-1')}} | /usr/bin/jq -r '.DBInstances[].DBInstanceStatus'
+      register: db_state
+      with_items: "{{ rds_start_stop_list }}"
 
     - name: "Start/stop rds instance by Name"
       command: >
-        /usr/local/bin/aws rds {{ action }}-db-instance --db-instance-identifier {{ item.Name }}
-      when: item.Name is defined
-      with_items: "{{ rds_start_stop_list }}"
+        /usr/local/bin/aws rds {{ operation }}-db-instance --db-instance-identifier {{ item[0].Name }} --region {{ item[0].region | default('eu-west-1') }}
+      with_nested:
+        - "{{ rds_start_stop_list }}"
+        - "{{ db_state.results }}"
+      when: item[0].Name is defined and
+            ((item[1].stdout == "stopped" and operation == "start") or
+             (item[1].stdout == "available" and operation == "stop"))
   {% endraw %}
