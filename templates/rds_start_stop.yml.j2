@@ -19,7 +19,7 @@
     - name: "Start/stop rds instance by Name"
       command: >
         /usr/local/bin/aws rds {{ operation }}-db-instance --db-instance-identifier {{ item[0].Name }} --region {{ item[0].region | default('eu-west-1') }}
-      with_nested:
+      with_together:
         - "{{ rds_start_stop_list }}"
         - "{{ db_state.results }}"
       when: item[0].Name is defined and
