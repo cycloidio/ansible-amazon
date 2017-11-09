@@ -9,7 +9,7 @@
     prefix: "{{ item.prefix | default('') }}"
     status: enabled
     state: present
-  with_items: lifecycle_policies
+  with_items: "{{ lifecycle_policies }}"
   when:
     item.transition_days is defined and item.transition_days > 0
 # Add lifecycle without glacier
@@ -20,7 +20,7 @@
     prefix: "{{ item.prefix | default('') }}"
     status: enabled
     state: present
-  with_items: lifecycle_policies
+  with_items: "{{ lifecycle_policies }}"
   when:
     item.transition_days is undefined or item.transition_days == 0
 
